@@ -1,5 +1,23 @@
 @extends('layouts.app')
 @section('content')
+    <link rel="stylesheet" type="text/css" href="resources/css/style.css">
+    <form>
+        <select id="pagination">
+            <option value="10" @if($limit == 10) selected @endif >10</option>
+            <option value="50" @if($limit == 50) selected @endif >50</option>
+            <option value="100" @if($limit == 100) selected @endif >100</option>
+        </select>
+    </form>
+
+    <script>
+        document.getElementById('pagination').onchange = function() {
+            let queryString = window.location.search;
+            let params = new URLSearchParams(queryString);
+            params.delete('limit');
+            params.append('limit', document.getElementById("pagination").value);
+            document.location.href = "?" + params.toString();
+        }
+    </script>
 
     <div class="row">
         <div class="col-lg-12 margin-tb">
@@ -42,7 +60,7 @@
                 <td>{{ $feedback->title }}</td>
                 <td>{{ $feedback->detail }}</td>
                 <td>
-                    <a href="{{$url = url('storage/app/public'.$feedback->filename)}}">
+                    <a href="{{$url = url('storage/'.$feedback->filename)}}">
                         {{$feedback->filename}}
                     </a>
                 </td>
