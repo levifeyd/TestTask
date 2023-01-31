@@ -14,7 +14,8 @@ class CreateUserRole extends Seeder
      */
     public function run()
     {
-        $role = Role::create(['name' => 'User']);
+
+        $role = Role::findByName("User");
 
         $permission = Permission::findByName('feedback-create');
 

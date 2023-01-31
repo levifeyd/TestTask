@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FeedbackFormRequest;
+use App\Mail\FeedbackForm;
 use App\Models\Feedback;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class FeedbackController extends Controller {
     /**
@@ -51,13 +54,8 @@ class FeedbackController extends Controller {
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) {
-
-        request()->validate([
-            'title' => 'required',
-            'detail' => 'required',
-            'file' => 'required|file|mimes:jpg,png,jpeg,xls,pdf|max:3072'
-        ]);
+    public function store(FeedbackFormRequest $request) {
+        $data = $request->validated();
         $lastFeedback = Feedback::where('user_id', Auth::user()->id)->latest()->first();
         if (!is_null($lastFeedback) && Carbon::now()->diffInDays($lastFeedback->created_at) < 1) {
             return back()->withErrors( 'You can create feeedback only once a day');
@@ -70,8 +68,15 @@ class FeedbackController extends Controller {
         $input['user_id'] = Auth::user()->id;
         Feedback::create($input);
 
-        return redirect()->route('feedbacks.index')
-            ->with('success','Feedback created successfully.');
+        $data["email"] = Auth::user()->email;
+
+        try {
+            Mail::to("second_em@mail.ru")->send(new FeedbackForm($data));
+        } catch (\Exception $exception) {
+            echo $exception;
+        }
+
+        return redirect()->route('feedbacks.index');
     }
 
     /**
