@@ -26,4 +26,4 @@
 # Панель для роли "Пользотваель" для создания отзыва
 ![Main view](screenshots/user_feedback_panel.png)
 # Logout
-![Main view](/screenshots/logout.png)
+![Main view](screenshots/logout.png)
